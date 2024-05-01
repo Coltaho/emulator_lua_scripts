@@ -29,6 +29,7 @@ local upgradeuIcons = {}
 local selectedWeapon = 0
 local imagesloaded = false
 local chStage = 0
+local AP_ROM = false
 
 
 local loadImage = function (image)

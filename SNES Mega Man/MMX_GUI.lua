@@ -1,5 +1,6 @@
 --Script by Coltaho 4/26/2024
 --Supports Snes9x-RR 1.60 and Bizhawk
+--Art by Kammesennin and Coltaho
 
 if not event then
 	print("Found: Snes9x-RR")
