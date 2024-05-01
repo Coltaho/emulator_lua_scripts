@@ -3,6 +3,8 @@
 Mega Man X1 and Mega Man X2 scripts:
  
 Compatible with snes9x-rr 1.60 and Bizhawk
+
+Should work with either JP or US Roms, any version.
  
 Images must be relative to script being ran (in the same directory).
 
