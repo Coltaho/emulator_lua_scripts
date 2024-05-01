@@ -15,4 +15,3 @@ Let me know of any issues via Discord [Coltaho](https://discordapp.com/users/120
 
 Art credit goes to:
 [Kammesennin](http://twitch.tv/Kammesennin)
-[Coltaho](http://twitch.tv/Coltaho)
