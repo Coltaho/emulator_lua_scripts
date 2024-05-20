@@ -16,7 +16,7 @@ local weaponuIcons = {}
 local sigmaStageIcons = {}
 local ridearmorIcons = {}
 local ridearmor = {}
-local myridearmor = { "RAN", "RAF", "RAH", "RAK" }
+local myridearmor = { "RAN", "RAK", "RAH", "RAF" }
 local ridefull = false
 local tanks = {}
 local mytanks = { nil, nil,	"catfish", nil, "tiger", nil, "buffalo", "rhino" }
@@ -36,7 +36,15 @@ local selectedWeapon = 0
 local imagesloaded = false
 local sigmaStage = 0
 local AP_ROM = false
-
+local mygui = nil
+local showWeapons = true
+local showSigmaStage = true
+local showUpgrades = true
+local showHearts = true
+local showSubTanks = true
+local showRideArmors = true
+local showSubTankInfo = false
+local bottomY = 0
 
 local loadImage = function (image)
 	if is_snes9x then
@@ -107,9 +115,9 @@ local function loadImages()
 	
 	ridearmorIcons = {
 		loadImage("./images/RAN"),
-		loadImage("./images/RAF"),
+		loadImage("./images/RAK"),
 		loadImage("./images/RAH"),
-		loadImage("./images/RAK")
+		loadImage("./images/RAF")
 	}
 
 	imagesloaded = true
@@ -128,87 +136,111 @@ end
 --Function for drawing GUI
 function DrawGUIOverlay()
 	--Draw weapons
-	local weaponCount = 0	
-	for i = 1, 9 do
-		if weapons[myweapons[i]] then
-			putImage(i * 16 - 14, 207, weaponIcons[i], 16, 16)
-			if i <= 8 then
-				weaponCount = weaponCount + 1
+	if showWeapons then 
+		weaponCount = 0	
+		for i = 1, 9 do
+			if weapons[myweapons[i]] then
+				putImage(i * 16 - 14, 207 + bottomY, weaponIcons[i], 16, 16)
+				if i <= 8 then
+					weaponCount = weaponCount + 1
+				end
+			else
+				putImage(i * 16 - 14, 207 + bottomY, weaponuIcons[i], 16, 16)
 			end
-		else
-			putImage(i * 16 - 14, 207, weaponuIcons[i], 16, 16)
 		end
+		--Draw a box around the selected weapon icon
+		if selectedWeapon ~= 0 then
+			if is_snes9x then
+				gui.box(selectedWeapon * 16 - 13, 208, (selectedWeapon * 16), 221, "#FFFFFF00", "#FFFF00FF")
+			else 
+				gui.drawBox(selectedWeapon * 16 - 13, 208 + bottomY, (selectedWeapon * 16), 221 + bottomY, "#FFFFFF00")
+			end
+		end	
 	end
     
 	--If we are at final stage stop drawing hearts/subtanks
 	if sigmaStage < 3 then
-		--Draw hearts unless maxed
-		if heartcount < 255 then
-			for i = 1, 8 do
-				if hearts[myhearts[i]] then
-					putImage((i * 16) - 14, 199, heartIcon, 16, 16, 0.9)
+		if showHearts then 
+			--Draw hearts unless maxed
+			-- if heartcount < 255 then
+				for i = 1, 8 do
+					if hearts[myhearts[i]] then
+						putImage((i * 16) - 14, 199 + bottomY, heartIcon, 16, 16, 0.9)
+					end
 				end
+			-- end
+		end
+		
+		if showSubTanks then
+			--Draw subtanks unless maxed
+			-- if not subtanksall then
+				for i = 1, 8 do
+					if tanks[mytanks[i]] then
+						putImage((i * 16) - 6, 199 + bottomY, etankIcon, 16, 16, 0.9)
+					end
+				end
+			-- end
+		end
+	end
+	
+	if showSigmaStage then
+		--Draw Current Sigma stage unlocked
+		if weaponCount == 8 and sigmaStage == 0 then 
+			putImage(152, 207 + bottomY, sigmaStageIcons[sigmaStage + 1], 16, 16)
+		elseif sigmaStage > 0 then
+			putImage(152, 207 + bottomY, sigmaStageIcons[sigmaStage + 1], 16, 16)
+		end
+	end
+	
+	if showUpgrades then
+		--Draw Current Armor Upgrades
+		for i = 1, 4 do
+			if upgrades[myupgrades[i]] then
+				putImage(158 + (i * 16), 207 + bottomY, upgradeIcons[i], 16, 16)
+			else
+				putImage(158 + (i * 16), 207 + bottomY, upgradeuIcons[i], 16, 16)
+			end
+		end
+	
+		--Draw Current Chip Upgrades
+		for i = 5, 8 do
+			if upgrades[myupgrades[i]] then
+				putImage(158 + ((i - 4) * 16), 207 + bottomY, upgradeIcons[i], 16, 16)
 			end
 		end
 		
-		--Draw subtanks unless maxed
-		if not subtanksall then
-			for i = 1, 8 do
-				if tanks[mytanks[i]] then
-					putImage((i * 16) - 6, 199, etankIcon, 16, 16, 0.9)
+		--Draw Saber upgrade
+		if upgrades[myupgrades[9]] then
+			putImage(238, 207 + bottomY, upgradeIcons[9], 16, 16)
+		end	
+	end
+	
+	if showRideArmors then 
+		--Draw Current Ride Armor parts
+		if sigmaStage < 3 then
+			-- if not ridefull then 
+				for i = 1, 4 do
+					if ridearmor[myridearmor[i]] then
+						-- putImage(168 + (i * 16), 191, zeroIcons[i], 16, 16)		
+						putImage(80 + (i * 16), 0, ridearmorIcons[i], 16, 16)		
+					end
 				end
-			end
+			-- end
 		end
 	end
 	
-	--Draw Current Sigma stage unlocked
-	if weaponCount == 8 and sigmaStage == 0 then 
-		putImage(152, 207, sigmaStageIcons[sigmaStage + 1], 16, 16)
-	elseif sigmaStage > 0 then
-		putImage(152, 207, sigmaStageIcons[sigmaStage + 1], 16, 16)
+	if showSubTankInfo then
+		gui.text(10, 0, "Sub Tank1: " .. round(tank1/14 * 100, 0) .. "%")
+		gui.text(10, 16, "Sub Tank2: " .. round(tank2/14 * 100, 0) .. "%")
+		gui.text(10, 32, "Sub Tank3: " .. round(tank3/14 * 100, 0) .. "%")
+		gui.text(10, 48, "Sub Tank4: " .. round(tank4/14 * 100, 0) .. "%")
 	end
-	
-	--Draw Current Armor Upgrades
-	for i = 1, 4 do
-		if upgrades[myupgrades[i]] then
-			putImage(158 + (i * 16), 207, upgradeIcons[i], 16, 16)
-		else
-			putImage(158 + (i * 16), 207, upgradeuIcons[i], 16, 16)
-		end
-	end
-	
-	--Draw Current Chip Upgrades
-	for i = 5, 8 do
-		if upgrades[myupgrades[i]] then
-			putImage(158 + ((i - 4) * 16), 207, upgradeIcons[i], 16, 16)
-		end
-	end
-	
-	--Draw Current Ride Armor parts
-	if sigmaStage < 3 then
-		-- if not ridefull then 
-			for i = 1, 4 do
-				if ridearmor[myridearmor[i]] then
-					-- putImage(168 + (i * 16), 191, zeroIcons[i], 16, 16)		
-					putImage(80 + (i * 16), 0, ridearmorIcons[i], 16, 16)		
-				end
-			end
-		-- end
-	end
-	
-	--Draw Saber upgrade
-	if upgrades[myupgrades[9]] then
-		putImage(238, 207, upgradeIcons[9], 16, 16)
-	end	
+end
 
-	--Draw a box around the selected weapon icon
-	if selectedWeapon ~= 0 then
-		if is_snes9x then
-			gui.box(selectedWeapon * 16 - 13, 208, (selectedWeapon * 16), 221, "#FFFFFF00", "#FFFF00FF")
-		else 
-			gui.drawBox(selectedWeapon * 16 - 13, 208, (selectedWeapon * 16), 221, "#FFFFFF00")
-		end
-	end	
+--Rounds for us
+function round(num, numDecimalPlaces)
+  local mult = 10^(numDecimalPlaces or 0)
+  return math.floor(num * mult + 0.5) / mult
 end
 
 --Adjusts address based on emulator
@@ -254,8 +286,14 @@ function readValues()
 	tanks.tiger = mybyte % 256 >= 128
 	subtanksall = tanks.buffalo and tanks.catfish and tanks.rhino and tanks.tiger
 	
+	--Subtank Info
+	tank1 = memory.readbyte(adjustAddr(0x7E1FB7)) % 16
+	tank2 = memory.readbyte(adjustAddr(0x7E1FB8)) % 16
+	tank3 = memory.readbyte(adjustAddr(0x7E1FB9)) % 16
+	tank4 = memory.readbyte(adjustAddr(0x7E1FBA)) % 16
+	
 	--Ride armor and chips
-	local mybyte = memory.readbyte(adjustAddr(0x7E1FD7))
+	mybyte = memory.readbyte(adjustAddr(0x7E1FD7))
 	ridearmor.RAN = mybyte % 2 == 1
 	ridearmor.RAK = mybyte % 4 >= 2
 	ridearmor.RAH = mybyte % 8 >= 4
@@ -287,6 +325,53 @@ function cleanUp()
 	print("Exiting...")
 	gui.clearGraphics()
 	gui.clearImageCache()
+	forms.destroyall()
+end
+
+function updateOptions()
+	showWeapons = forms.ischecked(chkWeapons)
+	showSigmaStage = forms.ischecked(chkSigmaStage)
+	showUpgrades = forms.ischecked(chkUpgrades)
+	showHearts = forms.ischecked(chkHearts)
+	showSubTanks = forms.ischecked(chkSubTanks)
+	showRideArmors = forms.ischecked(chkRideArmors)
+	showSubTankInfo = forms.ischecked(chkSubTankInfo)
+	
+	if forms.ischecked(chkGamePad) then
+		client.SetGameExtraPadding(0, 16, 0, 16)
+		bottomY = 33
+	else
+		client.SetGameExtraPadding(0, 0, 0, 0)
+		bottomY = 0
+	end
+end
+
+function createOptionsForm()
+	mygui = forms.newform(290, 172, "MMX3 GUI Options")
+	chkWeapons = forms.checkbox(mygui, "Weapons", 20, 6)
+	chkSigmaStage = forms.checkbox(mygui, "Sigma Stage", 20, 26)
+	chkUpgrades = forms.checkbox(mygui, "Upgrades", 20, 46)
+	chkHearts = forms.checkbox(mygui, "Hearts", 20, 66)
+	chkSubTanks = forms.checkbox(mygui, "Sub Tanks", 20, 86)
+	chkRideArmors = forms.checkbox(mygui, "Ride Armors", 20, 106)
+	chkGamePad = forms.checkbox(mygui, "Outside Game", 140, 6)
+	chkSubTankInfo = forms.checkbox(mygui, "Sub Tank Info", 140, 26)
+	forms.setproperty(chkWeapons, "Checked", "true")
+	forms.setproperty(chkSigmaStage, "Checked", "true")
+	forms.setproperty(chkUpgrades, "Checked", "true")
+	forms.setproperty(chkHearts, "Checked", "true")
+	forms.setproperty(chkSubTanks, "Checked", "true")
+	forms.setproperty(chkRideArmors, "Checked", "true")
+	forms.setproperty(chkGamePad, "Checked", "true")
+	forms.setproperty(chkSubTankInfo, "Checked", "true")
+	forms.addclick(chkWeapons, updateOptions)
+	forms.addclick(chkSigmaStage, updateOptions)
+	forms.addclick(chkUpgrades, updateOptions)
+	forms.addclick(chkHearts, updateOptions)
+	forms.addclick(chkSubTanks, updateOptions)
+	forms.addclick(chkRideArmors, updateOptions)
+	forms.addclick(chkGamePad, updateOptions)
+	forms.addclick(chkSubTankInfo, updateOptions)
 end
 
 if is_snes9x then
@@ -307,6 +392,8 @@ else
 	memory.usememorydomain("WRAM")
 	print("Domain: " .. memory.getcurrentmemorydomain());
 	event.onexit(cleanUp)
+	createOptionsForm()
+	updateOptions()
     while true do
         readValues()
         DrawGUIOverlay()
