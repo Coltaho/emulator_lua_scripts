@@ -4,6 +4,8 @@ Mega Man X1 and Mega Man X2 scripts:
  
 Compatible with snes9x-rr 1.60 and Bizhawk
 
+Note with snes9x: It appears to ranomly have artifacts in displaying the images. If anyone knows how to debug their client feel free to fix that.
+
 Should work with either JP or US Roms, any version.
  
 Images must be relative to script being ran (in the same directory).
