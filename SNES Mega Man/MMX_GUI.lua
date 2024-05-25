@@ -58,7 +58,7 @@ enemySlots[13] = { }
 local Weaknesses = {}
 local weaknessesloaded = false
 local Enemies = {}
-Enemies[0] = { name = "???", weakness1 = "?" }
+Enemies[0] = { name = "Nothing" }
 Enemies[1] = { name = "Hoganmer" }
 Enemies[2] = { name = "Chill Penguin", weakness1 = 0xA }
 Enemies[3] = { name = "Volt Slime" }
@@ -151,13 +151,13 @@ Enemies[89] = { name = "Long pillar" }
 Enemies[90] = { name = "Unknown" }
 Enemies[91] = { name = "Mega Tortoise" }
 Enemies[92] = { name = "Light Portrait" }
-Enemies[93] = { name = "Rangda Bangda wall object", weakness1 = 0x8 }
-Enemies[94] = { name = "Rangda Bangda eye", weakness1 = 0x8 }
-Enemies[95] = { name = "Rangda Bangda mouth", weakness1 = 0x8 }
+Enemies[93] = { name = "Rangda Bangda", weakness1 = 0x8 }
+Enemies[94] = { name = "Rangda Bangda eye" }
+Enemies[95] = { name = "Rangda Bangda mouth" }
 Enemies[96] = { name = "Rangda Bangda wall sides" }
-Enemies[97] = { name = "D-Rex head", weakness1 = 0xD }
+Enemies[97] = { name = "D-Rex", weakness1 = 0xD }
 Enemies[98] = { name = "D-Rex base" }
-Enemies[99] = { name = "Bospider", weakness1 = 0xE }
+Enemies[99] = { name = "BoSpider", weakness1 = 0xE }
 Enemies[100] = { name = "Prison capsule destroyer" }
 Enemies[101] = { name = "Sigma", weakness1 = 0xC }
 Enemies[102] = { name = "Zero Sigma stage" }
@@ -165,8 +165,7 @@ Enemies[103] = { name = "Vile in Mech (Sigma Stage 1)" }
 Enemies[104] = { name = "Creeper hole" }
 Enemies[105] = { name = "Vile", weakness1 = 0x9 }
 Enemies[106] = { name = "Wall Creeper" }
-Enemies[107] = { name = "Final Form Sigma claw" }
-for i=108,180 do Enemies[i] = { } end
+Enemies[107] = { name = "Final Form Sigma Claw" }
 
 local loadImage = function (image)
 	if is_snes9x then
@@ -230,9 +229,9 @@ local function loadImages()
 	}
 	
 	Weaknesses[0] = { name = "Lemon", icon = loadImage("./images/lemon") }
-	Weaknesses[1] = { name = "Charge Shot L1", charged = true }
-	Weaknesses[2] = { name = "Charge Shot L3", charged = true }
-	Weaknesses[3] = { name = "Charge Shot L2", charged = true }
+	Weaknesses[1] = { name = "Charge Shot L1", charged = true, icon = loadImage("./images/lemon") }
+	Weaknesses[2] = { name = "Charge Shot L3", charged = true, icon = loadImage("./images/lemon") }
+	Weaknesses[3] = { name = "Charge Shot L2", charged = true, icon = loadImage("./images/lemon") }
 	Weaknesses[4] = { name = "Hadouken", icon = loadImage("./images/hadouken") }
 	Weaknesses[5] = { name = "???" }
 	Weaknesses[6] = { name = "Dash Lemon", charged = true, icon = loadImage("./images/lemon") }
@@ -253,7 +252,7 @@ local function loadImages()
 	Weaknesses[21] = { name = "Charged Electric Spark", charged = true, icon = loadImage("./images/spark") }
 	Weaknesses[22] = { name = "Charged Boomerang Cutter", charged = true, icon = loadImage("./images/cutter") }
 	Weaknesses[23] = { name = "Charged Shotgun Ice", charged = true, icon = loadImage("./images/ice") }
-	Weaknesses[29] = { name = "Charged Shot L3 Shockwave", charged = true }
+	Weaknesses[29] = { name = "Charged Shot L3 Shockwave", charged = true, icon = loadImage("./images/lemon") }
 
 	imagesloaded = true
 end
@@ -349,9 +348,13 @@ function DrawGUIOverlay()
 		for i = 0, 13, 1 do
 			if enemySlots[i] then
 				if enemySlots[i].onscreen == 1 or enemySlots[i].onscreen == 0xFF then
-					if Enemies[enemySlots[i].ID].weakness1 then
-						gui.text(10, y, "Enemy: " .. Enemies[enemySlots[i].ID].name .. " HP: " .. enemySlots[i].CurrentHP .. " WEAKNESS: " .. Weaknesses[Enemies[enemySlots[i].ID].weakness1].name, nil, "topright")
-						if not paused  and enemySlots[i].CurrentHP > 0 and Weaknesses[Enemies[enemySlots[i].ID].weakness1].icon then
+					if Enemies[enemySlots[i].ID] and Enemies[enemySlots[i].ID].name and Enemies[enemySlots[i].ID].weakness1 then
+						gui.text(10, y, "Enemy: " .. Enemies[enemySlots[i].ID].name .. " HP: " .. enemySlots[i].CurrentHP .. " WEAKNESS1: " .. Weaknesses[Enemies[enemySlots[i].ID].weakness1].name, nil, "topright")
+						if Enemies[enemySlots[i].ID].weakness2 then
+							y = y + 16
+							gui.text(10, y, "WEAKNESS2: " .. Weaknesses[Enemies[enemySlots[i].ID].weakness2].name, nil, "topright")
+						end
+						if unpaused and enemySlots[i].CurrentHP > 0 and Weaknesses[Enemies[enemySlots[i].ID].weakness1].icon then
 							putImage(232, 112, Weaknesses[Enemies[enemySlots[i].ID].weakness1].icon, 16, 16)
 							if Weaknesses[Enemies[enemySlots[i].ID].weakness1].charged == true then
 								if is_snes9x then
@@ -361,7 +364,7 @@ function DrawGUIOverlay()
 								end
 							end	
 							if Weaknesses[Enemies[enemySlots[i].ID].weakness2] and Weaknesses[Enemies[enemySlots[i].ID].weakness2].icon then
-								putImage(232, 128, Weaknesses[Enemies[enemySlots[i].ID].weakness1].icon, 16, 16)
+								putImage(232, 128, Weaknesses[Enemies[enemySlots[i].ID].weakness2].icon, 16, 16)
 								if Weaknesses[Enemies[enemySlots[i].ID].weakness2].charged == true then
 									if is_snes9x then
 										gui.box(246, 129, 233, 142, "#FFFFFF00", "#FFFF00FF")
@@ -373,8 +376,9 @@ function DrawGUIOverlay()
 						end
 					else
 						-- gui.text(10, y, "Enemy: " .. Enemies[enemySlots[i].ID].name .. " HP: " .. enemySlots[i].CurrentHP, nil, "topright")
-					end
-					y = y + 16
+						-- y = y + 16
+					end	
+				y = y + 16					
 				end
 			end
 		end
@@ -445,7 +449,7 @@ function readValues()
 	hearts.mandrill = mybyte % 128 >= 64
 	hearts.octopus = mybyte % 256 >= 128
 	
-	paused = memory.readbyte(adjustAddr(0x7E00C9)) > 0
+	unpaused = memory.readbyte(adjustAddr(0x7E00C9)) == 0 or memory.readbyte(adjustAddr(0x7E00C9)) == 2
 	
 	if showWeaknessInfo then
 		enemies()
@@ -570,10 +574,6 @@ function enemies()
 		Enemies[99].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 10) + 1))
 		Enemies[93].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 11))) --Rangda Total Health
 		Enemies[93].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 11) + 1))
-		Enemies[94].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 11))) --Rangda Bangda eye
-		Enemies[94].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 11) + 1))
-		Enemies[95].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 11))) --Rangda Bangda mouth
-		Enemies[95].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 11) + 1))
 		Enemies[97].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 12))) --D-Rex
 		Enemies[97].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 12) + 1))
 		Enemies[38].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 13))) --Velguarder
