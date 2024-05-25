@@ -25,8 +25,6 @@ local etankIcon = nil
 local hearts = {}
 local myhearts = { "seahorse", "hornet", "catfish", "crawfish", "tiger", "beetle", "buffalo", "rhino" }
 local heartcount = 0
-local access = {}
-local myaccess = { "seahorse", "hornet", "catfish", "crawfish", "tiger", "beetle", "buffalo", "rhino" }
 local heartIcon = nil
 local upgrades = {}
 local myupgrades = { "legs", "head", "body", "arm", "legs2", "head2", "body2", "arm2", "saber" }
@@ -44,6 +42,7 @@ local showHearts = true
 local showSubTanks = true
 local showRideArmors = true
 local showSubTankInfo = false
+local showWeaknessInfo = false
 local bottomY = 0
 
 local loadImage = function (image)
@@ -235,6 +234,10 @@ function DrawGUIOverlay()
 		gui.text(10, 32, "Sub Tank3: " .. round(tank3/14 * 100, 0) .. "%")
 		gui.text(10, 48, "Sub Tank4: " .. round(tank4/14 * 100, 0) .. "%")
 	end
+	
+	if showWeaknessInfo then
+	
+	end
 end
 
 --Rounds for us
@@ -336,6 +339,7 @@ function updateOptions()
 	showSubTanks = forms.ischecked(chkSubTanks)
 	showRideArmors = forms.ischecked(chkRideArmors)
 	showSubTankInfo = forms.ischecked(chkSubTankInfo)
+	showWeaknessInfo = forms.ischecked(chkWeaknessInfo)
 	
 	if forms.ischecked(chkGamePad) then
 		client.SetGameExtraPadding(0, 16, 0, 16)
@@ -356,6 +360,7 @@ function createOptionsForm()
 	chkRideArmors = forms.checkbox(mygui, "Ride Armors", 20, 106)
 	chkGamePad = forms.checkbox(mygui, "Outside Game", 140, 6)
 	chkSubTankInfo = forms.checkbox(mygui, "Sub Tank Info", 140, 26)
+	chkWeaknessInfo = forms.checkbox(mygui, "Weakness Info", 140, 46)
 	forms.setproperty(chkWeapons, "Checked", "true")
 	forms.setproperty(chkSigmaStage, "Checked", "true")
 	forms.setproperty(chkUpgrades, "Checked", "true")
@@ -364,6 +369,7 @@ function createOptionsForm()
 	forms.setproperty(chkRideArmors, "Checked", "true")
 	forms.setproperty(chkGamePad, "Checked", "true")
 	forms.setproperty(chkSubTankInfo, "Checked", "true")
+	forms.setproperty(chkWeaknessInfo, "Checked", "true")
 	forms.addclick(chkWeapons, updateOptions)
 	forms.addclick(chkSigmaStage, updateOptions)
 	forms.addclick(chkUpgrades, updateOptions)
@@ -371,7 +377,8 @@ function createOptionsForm()
 	forms.addclick(chkSubTanks, updateOptions)
 	forms.addclick(chkRideArmors, updateOptions)
 	forms.addclick(chkGamePad, updateOptions)
-	forms.addclick(chkSubTankInfo, updateOptions)
+	forms.addclick(chkSubTankInfo, updateOptions)	
+	forms.addclick(chkWeaknessInfo, updateOptions)
 end
 
 if is_snes9x then
