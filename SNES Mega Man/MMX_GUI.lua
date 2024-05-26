@@ -374,11 +374,11 @@ function DrawGUIOverlay()
 								end
 							end	
 						end
+						y = y + 16
 					else
 						-- gui.text(10, y, "Enemy: " .. Enemies[enemySlots[i].ID].name .. " HP: " .. enemySlots[i].CurrentHP, nil, "topright")
 						-- y = y + 16
-					end	
-				y = y + 16					
+					end										
 				end
 			end
 		end

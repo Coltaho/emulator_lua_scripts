@@ -17,7 +17,7 @@ local sigmaStageIcons = {}
 local ridearmorIcons = {}
 local ridearmor = {}
 local myridearmor = { "RAN", "RAK", "RAH", "RAF" }
-local ridefull = false
+local ridearmorall = false
 local tanks = {}
 local mytanks = { nil, nil,	"catfish", nil, "tiger", nil, "buffalo", "rhino" }
 local subtanksall = false
@@ -33,6 +33,7 @@ local upgradeuIcons = {}
 local selectedWeapon = 0
 local imagesloaded = false
 local sigmaStage = 0
+local paused = false
 local AP_ROM = false
 local mygui = nil
 local showWeapons = true
@@ -44,6 +45,132 @@ local showRideArmors = true
 local showSubTankInfo = false
 local showWeaknessInfo = false
 local bottomY = 0
+local enemySlots = { }
+enemySlots[0] = { }
+enemySlots[1] = { }
+enemySlots[2] = { }
+enemySlots[3] = { }
+enemySlots[4] = { }
+enemySlots[5] = { }
+enemySlots[6] = { }
+enemySlots[7] = { }
+enemySlots[8] = { }
+enemySlots[9] = { }
+enemySlots[10] = { }
+enemySlots[11] = { }
+enemySlots[12] = { }
+enemySlots[13] = { }
+local Weaknesses = {}
+local weaknessesloaded = false
+local Enemies = {}
+Enemies[0] = { name = "Weapon Get cutscene" }
+Enemies[1] = { name = "???" }
+Enemies[2] = { name = "What?" }
+Enemies[3] = { name = "Blady" }
+Enemies[4] = { name = "Boss Defeated Obj" }
+Enemies[5] = { name = "Elevating Platform" }
+Enemies[6] = { name = "Earth Commander" }
+Enemies[7] = { name = "Title Screen 3" }
+Enemies[8] = { name = "Notor Banger" }
+Enemies[9] = { name = "Escanail" }
+Enemies[10] = { name = "Carry Arm" }
+Enemies[11] = { name = "Caterkiller" }
+Enemies[12] = { name = "Drimole-W" }
+Enemies[13] = { name = "Helit" }
+Enemies[14] = { name = "Wall Cancer" }
+Enemies[15] = { name = "Carry Arm start?" }
+Enemies[16] = { name = "???" }
+Enemies[17] = { name = "Crablaster" }
+Enemies[18] = { name = "Destructable Ice Block" }
+Enemies[19] = { name = "Tornado Destructable" }
+Enemies[20] = { name = "Spycopter BG" }
+Enemies[21] = { name = "Ride Armor Test Boss" }
+Enemies[22] = { name = "Meta Capsule" }
+Enemies[23] = { name = "Spycopter" }
+Enemies[24] = { name = "Head Gunner" }
+Enemies[25] = { name = "X-mark elevator platform" }
+Enemies[26] = { name = "Ride Armor Destructable Block" }
+Enemies[27] = { name = "Spike ball generator" }
+Enemies[28] = { name = "Mine Tortoise" }
+Enemies[29] = { name = "Wild Tank" }
+Enemies[30] = { name = "Victoroid" }
+Enemies[31] = { name = "Tombort" }
+Enemies[32] = { name = "Collapsing ceiling piece" }
+Enemies[33] = { name = "Breaking glass" }
+Enemies[34] = { name = "Atareeter" }
+Enemies[35] = { name = "Snow Soldier + Snow Slider" }
+Enemies[36] = { name = "Blizzard machine" }
+Enemies[37] = { name = "Falling bullet-shaped platform" }
+Enemies[38] = { name = "Multidirectional elevator platform" }
+Enemies[39] = { name = "Worm Seeker-R", SubID = 0, weakness1 = 0xD, weakness2 = 0x7 }
+Enemies[40] = { name = "Walk Blaster" }
+Enemies[41] = { name = "De Voux" }
+Enemies[42] = { name = "Crawfish Reactor" }
+Enemies[43] = { name = "Drill Waying" }
+Enemies[44] = { name = "Genjibo" }
+Enemies[45] = { name = "Hamma Hamma" }
+Enemies[46] = { name = "Rising Lava" }
+Enemies[47] = { name = "Ride Armor platform" }
+Enemies[48] = { name = "Hell Crusher", weakness1 = 0xE, weakness2 = 0x1C }
+Enemies[49] = { name = "Vile stage elevator" }
+Enemies[50] = { name = "Electric spark" }
+Enemies[51] = { name = "Boulder" }
+Enemies[52] = { name = "Suspended Boulder" }
+Enemies[53] = { name = "Ganseki Carrier" }
+Enemies[54] = { name = "Descending spike ceiling" }
+Enemies[55] = { name = "Gravity-charged platform" }
+Enemies[56] = { name = "Crushing wall" }
+Enemies[57] = { name = "Vile stage falling bridge block" }
+Enemies[58] = { name = "Ride Armor destructable floor" }
+Enemies[59] = { name = "???" }
+Enemies[60] = { name = "Charged Thunder destructable platform" }
+Enemies[61] = { name = "Trapper" }
+Enemies[62] = { name = "Descending spike ceiling (Whole)" }
+Enemies[63] = { name = "Falling sand" }
+Enemies[64] = { name = "Vile stage destruction" }
+Enemies[65] = { name = "Crushing wall sequence" }
+Enemies[66] = { name = "Hotareeca", weakness1 = 0xD, weakness2 = 0x9 }
+Enemies[67] = { name = "Godkarmachine parts" }
+Enemies[68] = { name = "Kaiser Sigma parts" }
+Enemies[69] = { name = "Godkarmachine O' Inary checker" }
+Enemies[70] = { name = "Bit", weakness1 = 0x9, weakness2 = 0xD }
+Enemies[71] = { name = "Byte", weakness1 = 0xE, weakness2 = 0x1C }
+Enemies[72] = { name = "Dr. Doppler", weakness1 = 0x7 }
+Enemies[73] = { name = "Vile's Kangaroo Ride Armor", weakness1 = 0x1C, weakness2 = 0xA }
+Enemies[74] = { name = "Volt Kurageil", SubID = 0, weakness1 = 0x9, weakness2 = 0xD }
+Enemies[75] = { name = "Buster Destructable crate" }
+Enemies[76] = { name = "Hangerter" }
+Enemies[77] = { name = "Light Capsule" }
+Enemies[78] = { name = "Light Capsule lightning strike" }
+Enemies[79] = { name = "Shurikein", weakness1 = 0x7 }
+Enemies[80] = { name = "Maoh the Giant" }
+Enemies[81] = { name = "REX-2000", weakness1 = 0xD, weakness2 = 0xA }
+Enemies[82] = { name = "Blizzard Buffalo", weakness1 = 0x8 }
+Enemies[83] = { name = "Blast Hornet", weakness1 = 0xC }
+Enemies[84] = { name = "Crush Crawfish", weakness1 = 0x9 }
+Enemies[85] = { name = "Tunnel Rhino", weakness1 = 0x7 }
+Enemies[86] = { name = "Neon Tiger", weakness1 = 0xA }
+Enemies[87] = { name = "Toxic Seahorse", weakness1 = 0xD }
+Enemies[88] = { name = "Volt Catfish", weakness1 = 0xE }
+Enemies[89] = { name = "Gravity Beetle", weakness1 = 0x1C }
+Enemies[90] = { name = "Press Disposer", SubID = 0, weakness1 = 0xE, weakness2 = 0x1C }
+Enemies[91] = { name = "Mosquitus" }
+Enemies[92] = { name = "Dialogue Box" }
+Enemies[93] = { name = "Godkarmachine", weakness1 = 0x1C }
+Enemies[94] = { name = "Captain America Sigma", weakness1 = 0xD, weakness2 = 0xA }
+Enemies[95] = { name = "Kaiser Sigma", weakness1 = 0x3, weakness2 = 0x2 }
+Enemies[96] = { name = "Virus Sigma" }
+Enemies[97] = { name = "Vile", weakness1 = 0x1C, weakness2 = 0xA }
+Enemies[98] = { name = "Mac" }
+Enemies[99] = { name = "Vile's Goliath Armor", weakness1 = 0x8, weakness2 = 0xE }
+Enemies[100] = { name = "Sigma Virus cutscene" }
+Enemies[101] = { name = "Item dispenser" }
+Enemies[102] = { name = "???" }
+Enemies[103] = { name = "???" }
+Enemies[104] = { name = "???" }
+Enemies[105] = { name = "Boss Intro object" }
+Enemies[106] = { name = "???" }
+Enemies[107] = { name = "???" }
 
 local loadImage = function (image)
 	if is_snes9x then
@@ -118,6 +245,38 @@ local function loadImages()
 		loadImage("./images/RAH"),
 		loadImage("./images/RAF")
 	}
+	
+	Weaknesses[0] = { name = "Lemon", icon = loadImage("./images/lemon") }
+	Weaknesses[1] = { name = "Charge Shot L1", charged = true, icon = loadImage("./images/lemon") }
+	Weaknesses[2] = { name = "Z-Saber (Slash)", icon = loadImage("./images/X3Saber") }
+	Weaknesses[3] = { name = "Charge Shot L2", charged = true, icon = loadImage("./images/lemon") }
+	Weaknesses[4] = { name = "Z-Saber (Beam)", charged = true, icon = loadImage("./images/X3Saber") }
+	Weaknesses[5] = { name = "Z-Saber (Beam slashes)", charged = true, icon = loadImage("./images/X3Saber") }
+	Weaknesses[6] = { name = "Dash Lemon", charged = true, icon = loadImage("./images/lemon") }
+	Weaknesses[7] = { name = "Acid Burst", icon = loadImage("./images/Acid") }
+	Weaknesses[8] = { name = "Parasitic Bomb", icon = loadImage("./images/Bomb") }
+	Weaknesses[9] = { name = "Triad Thunder", icon = loadImage("./images/Thunder") }
+	Weaknesses[10] = { name = "Spinning Blade", icon = loadImage("./images/Blade") }
+	Weaknesses[11] = { name = "???" }
+	Weaknesses[12] = { name = "Gravity Well", icon = loadImage("./images/Hole") }
+	Weaknesses[13] = { name = "Frost Shield", icon = loadImage("./images/Frost") }
+	Weaknesses[14] = { name = "Tornado Fang", icon = loadImage("./images/Tornado") }
+	Weaknesses[15] = { name = "???" }
+	Weaknesses[16] = { name = "Charged Acid Burst", charged = true, icon = loadImage("./images/Acid") }
+	Weaknesses[17] = { name = "Charged Parasitic Bomb", charged = true, icon = loadImage("./images/Bomb") }
+	Weaknesses[18] = { name = "Charged Triad Thunder", charged = true, icon = loadImage("./images/Thunder") }
+	Weaknesses[19] = { name = "Charged Spinning Blade", charged = true, icon = loadImage("./images/Blade") }
+	Weaknesses[20] = { name = "???" }
+	Weaknesses[21] = { name = "Charged Gravity Well", charged = true, icon = loadImage("./images/Hole") }
+	Weaknesses[22] = { name = "Charged Frost Shield (On Hand)", charged = true, icon = loadImage("./images/Frost") }
+	Weaknesses[23] = { name = "Charged Tornado Fang", charged = true, icon = loadImage("./images/Tornado") }
+	Weaknesses[24] = { name = "Acid Burst (Small uncharged bubbles)", icon = loadImage("./images/Acid") }
+	Weaknesses[27] = { name = "Triad Thunder (Thunder)", icon = loadImage("./images/Thunder") }
+	Weaknesses[28] = { name = "Ray Splasher", icon = loadImage("./images/Ray") }
+	Weaknesses[29] = { name = "Charged Shot L3", charged = true, icon = loadImage("./images/lemon") }
+	Weaknesses[31] = { name = "Charged Shot L4 (Main Shot)", charged = true, icon = loadImage("./images/lemon") }
+	Weaknesses[32] = { name = "Charged Shot L4 (Secondary Shot)", charged = true, icon = loadImage("./images/lemon") }
+	Weaknesses[33] = { name = "Charged Frost Shield (Lotus)", charged = true, icon = loadImage("./images/Frost") }
 
 	imagesloaded = true
 end
@@ -171,14 +330,11 @@ function DrawGUIOverlay()
 		end
 		
 		if showSubTanks then
-			--Draw subtanks unless maxed
-			-- if not subtanksall then
-				for i = 1, 8 do
-					if tanks[mytanks[i]] then
-						putImage((i * 16) - 6, 199 + bottomY, etankIcon, 16, 16, 0.9)
-					end
+			for i = 1, 8 do
+				if tanks[mytanks[i]] then
+					putImage((i * 16) - 6, 199 + bottomY, etankIcon, 16, 16, 0.9)
 				end
-			-- end
+			end
 		end
 	end
 	
@@ -214,17 +370,14 @@ function DrawGUIOverlay()
 		end	
 	end
 	
-	if showRideArmors then 
+	if showRideArmors and unpaused then 
 		--Draw Current Ride Armor parts
 		if sigmaStage < 3 then
-			-- if not ridefull then 
-				for i = 1, 4 do
-					if ridearmor[myridearmor[i]] then
-						-- putImage(168 + (i * 16), 191, zeroIcons[i], 16, 16)		
-						putImage(80 + (i * 16), 0, ridearmorIcons[i], 16, 16)		
-					end
+			for i = 1, 4 do
+				if ridearmor[myridearmor[i]] then	
+					putImage(80 + (i * 16), 0, ridearmorIcons[i], 16, 16)		
 				end
-			-- end
+			end
 		end
 	end
 	
@@ -236,7 +389,53 @@ function DrawGUIOverlay()
 	end
 	
 	if showWeaknessInfo then
-	
+		local y = 0;
+		for i = 0, 13, 1 do
+			if enemySlots[i] then
+				if enemySlots[i].onscreen == 1 or enemySlots[i].onscreen == 0x80 then
+					if Enemies[enemySlots[i].ID] and Enemies[enemySlots[i].ID].name and Enemies[enemySlots[i].ID].weakness1 then
+						if Enemies[enemySlots[i].ID].SubID and Enemies[enemySlots[i].ID].SubID ~= enemySlots[i].SubID then
+							break
+						end
+						gui.text(10, y, "Enemy: " .. Enemies[enemySlots[i].ID].name .. " HP: " .. enemySlots[i].CurrentHP .. " WEAKNESS1: " .. Weaknesses[Enemies[enemySlots[i].ID].weakness1].name, nil, "topright")
+						-- gui.text(10, y, "Slot: " .. i .. " EnemySubID: " .. enemySlots[i].SubID .. " HP: " .. enemySlots[i].CurrentHP .. " WEAKNESS1: " .. Weaknesses[Enemies[enemySlots[i].ID].weakness1].name, nil, "topright")
+						if Enemies[enemySlots[i].ID].weakness2 then
+							y = y + 16
+							gui.text(10, y, "WEAKNESS2: " .. Weaknesses[Enemies[enemySlots[i].ID].weakness2].name, nil, "topright")
+						end
+						if unpaused and enemySlots[i].CurrentHP > 0 and Weaknesses[Enemies[enemySlots[i].ID].weakness1].icon then
+							putImage(232, 112, Weaknesses[Enemies[enemySlots[i].ID].weakness1].icon, 16, 16)
+							if Weaknesses[Enemies[enemySlots[i].ID].weakness1].charged == true then
+								if is_snes9x then
+									gui.box(246, 113, 233, 126, "#FFFFFF00", "#FFFF00FF")
+								else 
+									gui.drawBox(246, 113, 233, 126, "green")
+								end
+							end	
+							if Weaknesses[Enemies[enemySlots[i].ID].weakness2] and Weaknesses[Enemies[enemySlots[i].ID].weakness2].icon then
+								putImage(232, 128, Weaknesses[Enemies[enemySlots[i].ID].weakness2].icon, 16, 16)
+								if Weaknesses[Enemies[enemySlots[i].ID].weakness2].charged == true then
+									if is_snes9x then
+										gui.box(246, 129, 233, 142, "#FFFFFF00", "#FFFF00FF")
+									else 
+										gui.drawBox(246, 129, 233, 142, "green")
+									end
+								end
+							end	
+						end
+						y = y + 16
+					else 
+						if Enemies[enemySlots[i].ID] and Enemies[enemySlots[i].ID].name then
+							-- gui.text(10, y, "Slot: " .. i .. " EnemyID: " .. enemySlots[i].ID .. " name: " .. Enemies[enemySlots[i].ID].name .. " HP: " .. enemySlots[i].CurrentHP, nil, "topright")
+							-- y = y + 16
+						else
+							-- gui.text(10, y, "Slot: " .. i .. " EnemyID: " .. enemySlots[i].ID .. " name: NEEDED HP: " .. enemySlots[i].CurrentHP, nil, "topright")
+							-- y = y + 16
+						end
+					end	
+				end
+			end
+		end
 	end
 end
 
@@ -301,7 +500,7 @@ function readValues()
 	ridearmor.RAK = mybyte % 4 >= 2
 	ridearmor.RAH = mybyte % 8 >= 4
 	ridearmor.RAF = mybyte % 16 >= 8
-	ridefull = ridearmor.RAN and ridearmor.RAK and ridearmor.RAH and ridearmor.RAF
+	ridearmorall = ridearmor.RAN and ridearmor.RAK and ridearmor.RAH and ridearmor.RAF
 	upgrades.head2 = mybyte % 32 >= 16
 	upgrades.arm2 = mybyte % 64 >= 32
 	upgrades.body2 = mybyte % 128 >= 64
@@ -318,7 +517,12 @@ function readValues()
 	hearts.rhino = mybyte % 128 >= 64
 	hearts.tiger = mybyte % 256 >= 128
 	heartcount = mybyte
+	
+	unpaused = memory.readbyte(adjustAddr(0x7E1F37)) == 0
 
+	if showWeaknessInfo then
+		enemies()
+	end
 end
 
 --Ensure we have the images loaded before we try to use them
@@ -379,6 +583,74 @@ function createOptionsForm()
 	forms.addclick(chkGamePad, updateOptions)
 	forms.addclick(chkSubTankInfo, updateOptions)	
 	forms.addclick(chkWeaknessInfo, updateOptions)
+end
+
+function enemies()
+	local base
+	local weakBase = 0x7EF540
+	local start = 0xD18	
+	for i = 0, 13 , 1 do		
+		base = start + (i * 0x40)		
+		if i == 0 then
+			base = start
+		end
+		
+		enemySlots[i].onscreen = memory.readbyte(adjustAddr(0x7E0000 + base))
+		enemySlots[i].ID = memory.readbyte(adjustAddr(0x7E0000 + base + 0xA))
+		enemySlots[i].SubID = memory.readbyte(adjustAddr(0x7E0000 + base + 0xB))
+		enemySlots[i].CurrentHP = memory.readbyte(adjustAddr(0x7E0000 + base + 0x27))
+
+	end	
+	
+	if AP_ROM and not weaknessesloaded then		
+		Enemies[82].weakness1 = memory.readbyte(adjustAddr(weakBase)) --Buffalo
+		Enemies[82].weakness2 = memory.readbyte(adjustAddr(weakBase + 1))
+		Enemies[87].weakness1 = memory.readbyte(adjustAddr(weakBase + 0x8)) --Seahorse
+		Enemies[87].weakness2 = memory.readbyte(adjustAddr(weakBase + 0x8 + 1))
+		Enemies[85].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 2))) --Rhino
+		Enemies[85].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 2) + 1))
+		Enemies[88].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 3))) --Catfish
+		Enemies[88].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 3) + 1))
+		Enemies[84].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 4))) --Crawfish
+		Enemies[84].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 4) + 1))
+		Enemies[86].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 5))) --Tiger
+		Enemies[86].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 5) + 1))
+		Enemies[89].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 6))) --Beetle
+		Enemies[89].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 6) + 1))
+		Enemies[83].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 7))) --Hornet
+		Enemies[83].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 7) + 1))
+		Enemies[66].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 8))) --Hotareeca
+		Enemies[66].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 8) + 1))
+		Enemies[39].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 9))) --Worm Seeker-R
+		Enemies[39].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 9) + 1))
+		Enemies[48].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 10))) --Hell Crusher
+		Enemies[48].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 10) + 1))
+		Enemies[79].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 11))) --Shurikein
+		Enemies[79].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 11) + 1))
+		Enemies[70].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 12))) --Bit
+		Enemies[70].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 12) + 1))
+		Enemies[71].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 13))) --Byte
+		Enemies[71].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 13) + 1))
+		Enemies[97].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 14))) --Vile
+		Enemies[97].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 14) + 1))
+		Enemies[73].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 14))) --Vile kangaroo (same as regular)
+		Enemies[73].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 14) + 1))
+		Enemies[90].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 15))) --Press Disposal
+		Enemies[90].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 15) + 1))
+		Enemies[93].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 16))) --Godkarmamachine
+		Enemies[93].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 16) + 1))
+		Enemies[74].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 17))) --Doppler 2 boss/ Volt or Vile?
+		Enemies[74].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 17) + 1))
+		Enemies[99].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 18))) --Vile Goliath
+		Enemies[99].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 18) + 1))
+		Enemies[72].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 19))) --Dr. Doppler
+		Enemies[72].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 19) + 1))
+		Enemies[94].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 20))) --Captain Sigma
+		Enemies[94].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 20) + 1))
+		Enemies[95].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 21))) --Kaiser Sigma
+		Enemies[95].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 21) + 1))
+		weaknessesloaded = true
+	end
 end
 
 if is_snes9x then
