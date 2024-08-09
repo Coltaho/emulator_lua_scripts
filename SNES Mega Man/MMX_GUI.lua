@@ -253,6 +253,7 @@ local function loadImages()
 	Weaknesses[22] = { name = "Charged Boomerang Cutter", charged = true, icon = loadImage("./images/cutter") }
 	Weaknesses[23] = { name = "Charged Shotgun Ice", charged = true, icon = loadImage("./images/ice") }
 	Weaknesses[29] = { name = "Charged Shot L3 Shockwave", charged = true, icon = loadImage("./images/lemon") }
+	Weaknesses[255] = { name = "AP ERROR" }
 
 	imagesloaded = true
 end
@@ -594,10 +595,10 @@ if is_snes9x then
 	gui.register(DrawGUIOverlay)
 else
     -- bizhawk:
-	memory.usememorydomain("CARTROM")
-	if memory.readbyte(0x17FFE1) ~= 0xFF then
+	memory.usememorydomain("WRAM")
+	if memory.readbyte(adjustAddr(0x7FED00)) < 0xEE then
 		AP_ROM = true
-		print ("AP ROM Found!")
+		print ("AP ROM Found! " .. memory.readbyte(adjustAddr(0x7FED00)))
 	end	
 	memory.usememorydomain("WRAM")
 	print("Domain: " .. memory.getcurrentmemorydomain());
