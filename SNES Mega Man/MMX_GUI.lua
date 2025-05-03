@@ -355,7 +355,11 @@ function DrawGUIOverlay()
 							y = y + 16
 							gui.text(10, y, "WEAKNESS2: " .. Weaknesses[Enemies[enemySlots[i].ID].weakness2].name, nil, "topright")
 						end
-						if unpaused and enemySlots[i].CurrentHP > 0 and Weaknesses[Enemies[enemySlots[i].ID].weakness1].icon then
+						if Enemies[enemySlots[i].ID].weakness3 and Enemies[enemySlots[i].ID].weakness3 < 0xFF then
+							y = y + 16
+							gui.text(10, y, "WEAKNESS3: " .. Weaknesses[Enemies[enemySlots[i].ID].weakness3].name, nil, "topright")
+						end
+						if paused and enemySlots[i].CurrentHP > 0 and Weaknesses[Enemies[enemySlots[i].ID].weakness1].icon then
 							putImage(232, 112, Weaknesses[Enemies[enemySlots[i].ID].weakness1].icon, 16, 16)
 							if Weaknesses[Enemies[enemySlots[i].ID].weakness1].charged == true then
 								if is_snes9x then
@@ -371,6 +375,16 @@ function DrawGUIOverlay()
 										gui.box(246, 129, 233, 142, "#FFFFFF00", "#FFFF00FF")
 									else 
 										gui.drawBox(246, 129, 233, 142, "green")
+									end
+								end
+							end	
+							if Weaknesses[Enemies[enemySlots[i].ID].weakness3] and Weaknesses[Enemies[enemySlots[i].ID].weakness3].icon then
+								putImage(232, 144, Weaknesses[Enemies[enemySlots[i].ID].weakness3].icon, 16, 16)
+								if Weaknesses[Enemies[enemySlots[i].ID].weakness3].charged == true then
+									if is_snes9x then
+										gui.box(246, 145, 233, 158, "#FFFFFF00", "#FFFF00FF")
+									else 
+										gui.drawBox(246, 145, 233, 158, "green")
 									end
 								end
 							end	
@@ -450,7 +464,7 @@ function readValues()
 	hearts.mandrill = mybyte % 128 >= 64
 	hearts.octopus = mybyte % 256 >= 128
 	
-	unpaused = memory.readbyte(adjustAddr(0x7E00C9)) == 0 or memory.readbyte(adjustAddr(0x7E00C9)) == 2
+	paused = memory.readbyte(adjustAddr(0x7E00C9)) == 0 or memory.readbyte(adjustAddr(0x7E00C9)) == 2
 	
 	if showWeaknessInfo then
 		enemies()
@@ -515,7 +529,7 @@ end
 
 function enemies()
 	local base
-	local weakBase = 0x7FED00
+	local weakBase = 0x7FEC00
 	local start = 0xE68	
 	local finalSigma = false
 	for i = 0, 13 , 1 do		
@@ -525,6 +539,7 @@ function enemies()
 		end
 		
 		enemySlots[i].onscreen = memory.readbyte(adjustAddr(0x7E0000 + base))
+		-- print("Enemy: " .. memory.readbyte(adjustAddr(0x7E0000 + base + 0xA)));
 		enemySlots[i].ID = memory.readbyte(adjustAddr(0x7E0000 + base + 0xA))
 		-- enemySlots[i].SubID = memory.readbyte(adjustAddr(0x7E0000 + base + 0xB))
 		enemySlots[i].CurrentHP = memory.readbyte(adjustAddr(0x7E0000 + base + 0x27))
@@ -536,15 +551,17 @@ function enemies()
 	
 	if finalSigma == true then
 		if AP_ROM then
-			Enemies[101].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 15))) --Wolf Sigma
-			Enemies[101].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 15) + 1))
+			Enemies[101].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 15))) --Wolf Sigma
+			Enemies[101].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 15) + 1))
+			Enemies[101].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 15) + 2))
 		else
 			Enemies[101].weakness1 = 0x9
 		end
 	else
 		if AP_ROM then
-			Enemies[101].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 14))) --Jedi Sigma
-			Enemies[101].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 14) + 1))
+			Enemies[101].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 14))) --Jedi Sigma
+			Enemies[101].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 14) + 1))
+			Enemies[101].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 14) + 2))
 		else
 			Enemies[101].weakness1 = 0xC
 		end
@@ -553,34 +570,49 @@ function enemies()
 	if AP_ROM and not weaknessesloaded then		
 		Enemies[10].weakness1 = memory.readbyte(adjustAddr(weakBase)) --Chameleon
 		Enemies[10].weakness2 = memory.readbyte(adjustAddr(weakBase + 1))
-		Enemies[82].weakness1 = memory.readbyte(adjustAddr(weakBase + 0x8)) --Eagle
-		Enemies[82].weakness2 = memory.readbyte(adjustAddr(weakBase + 0x8 + 1))
-		Enemies[12].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 2))) --Mammoth
-		Enemies[12].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 2) + 1))
-		Enemies[2].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 3))) --Penguin
-		Enemies[2].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 3) + 1))
-		Enemies[49].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 4))) --Mandrill
-		Enemies[49].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 4) + 1))
-		Enemies[20].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 5))) --Armadillo
-		Enemies[20].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 5) + 1))
-		Enemies[7].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 6))) --Octopus
-		Enemies[7].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 6) + 1))
-		Enemies[5].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 7))) --Kuwanger
-		Enemies[5].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 7) + 1))
-		Enemies[3].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 8))) --Thunder Slimer
-		Enemies[3].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 8) + 1))
-		Enemies[105].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 9))) --Vile
-		Enemies[105].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 9) + 1))
-		Enemies[99].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 10))) --Bospider
-		Enemies[99].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 10) + 1))
-		Enemies[93].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 11))) --Rangda Total Health
-		Enemies[93].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 11) + 1))
-		Enemies[97].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 12))) --D-Rex
-		Enemies[97].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 12) + 1))
-		Enemies[38].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 13))) --Velguarder
-		Enemies[38].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 13) + 1))
-		Enemies[101].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x8 * 14))) --Sigma
-		Enemies[101].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x8 * 14) + 1))
+		Enemies[10].weakness3 = memory.readbyte(adjustAddr(weakBase + 2))
+		Enemies[82].weakness1 = memory.readbyte(adjustAddr(weakBase + 0x10)) --Eagle
+		Enemies[82].weakness2 = memory.readbyte(adjustAddr(weakBase + 0x10 + 1))
+		Enemies[82].weakness3 = memory.readbyte(adjustAddr(weakBase + 0x10 + 2))
+		Enemies[12].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 2))) --Mammoth
+		Enemies[12].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 2) + 1))
+		Enemies[12].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 2) + 2))
+		Enemies[2].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 3))) --Penguin
+		Enemies[2].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 3) + 1))
+		Enemies[2].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 3) + 2))
+		Enemies[49].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 4))) --Mandrill
+		Enemies[49].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 4) + 1))
+		Enemies[49].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 4) + 2))
+		Enemies[20].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 5))) --Armadillo
+		Enemies[20].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 5) + 1))
+		Enemies[20].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 5) + 2))
+		Enemies[7].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 6))) --Octopus
+		Enemies[7].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 6) + 1))
+		Enemies[7].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 6) + 2))
+		Enemies[5].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 7))) --Kuwanger
+		Enemies[5].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 7) + 1))
+		Enemies[5].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 7) + 2))
+		Enemies[3].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 8))) --Thunder Slimer
+		Enemies[3].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 8) + 1))
+		Enemies[3].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 8) + 2))
+		Enemies[105].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 9))) --Vile
+		Enemies[105].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 9) + 1))
+		Enemies[105].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 9) + 2))
+		Enemies[99].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 10))) --Bospider
+		Enemies[99].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 10) + 1))
+		Enemies[99].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 10) + 2))
+		Enemies[93].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 11))) --Rangda Total Health
+		Enemies[93].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 11) + 1))
+		Enemies[93].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 11) + 2))
+		Enemies[97].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 12))) --D-Rex
+		Enemies[97].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 12) + 1))
+		Enemies[97].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 12) + 2))
+		Enemies[38].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 13))) --Velguarder
+		Enemies[38].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 13) + 1))
+		Enemies[38].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 13) + 2))
+		Enemies[101].weakness1 = memory.readbyte(adjustAddr(weakBase + (0x10 * 14))) --Sigma
+		Enemies[101].weakness2 = memory.readbyte(adjustAddr(weakBase + (0x10 * 14) + 1))
+		Enemies[101].weakness3 = memory.readbyte(adjustAddr(weakBase + (0x10 * 14) + 2))
 		weaknessesloaded = true
 	end
 end
@@ -596,9 +628,9 @@ if is_snes9x then
 else
     -- bizhawk:
 	memory.usememorydomain("WRAM")
-	if memory.readbyte(adjustAddr(0x7FED00)) < 0xEE then
+	if memory.readbyte(adjustAddr(0x7FCD00)) < 0xEE then
 		AP_ROM = true
-		print ("AP ROM Found! " .. memory.readbyte(adjustAddr(0x7FED00)))
+		print ("AP ROM Found! " .. memory.readbyte(adjustAddr(0x7FCD00)))
 	end	
 	memory.usememorydomain("WRAM")
 	print("Domain: " .. memory.getcurrentmemorydomain());
